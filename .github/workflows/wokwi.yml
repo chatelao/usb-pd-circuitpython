@@ -13,7 +13,8 @@ jobs:
 
       - name: Run Wokwi CLI simulation
         run: |
-          docker pull wokwi/cli
+          docker run --rm -v "$PWD:/workspace" wokwi/wokwi-cli "$SKETCH" > wokwi_output.txt
+          # docker pull wokwi/cli
           # Find your sketch file (replace with your actual .ino or .cpp file)
           SKETCH=$(find . -name "*.ino" | head -n 1)
           if [ -z "$SKETCH" ]; then
