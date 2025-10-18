@@ -1,0 +1,35 @@
+name: Wokwi Simulation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  wokwi-simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Wokwi CLI simulation
+        run: |
+          docker pull wokwi/cli
+          # Find your sketch file (replace with your actual .ino or .cpp file)
+          SKETCH=$(find . -name "*.ino" | head -n 1)
+          if [ -z "$SKETCH" ]; then
+            echo "No Arduino sketch (.ino) found!"
+            exit 1
+          fi
+          echo "Simulating $SKETCH"
+          docker run --rm -v "$PWD:/workspace" wokwi/cli "$SKETCH" > wokwi_output.txt
+
+      - name: Display Wokwi (REPL) result
+        run: |
+          echo "---- Wokwi Simulation Output ----"
+          cat wokwi_output.txt
+
+      - name: Upload simulation output as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wokwi-output
+          path: wokwi_output.txt
